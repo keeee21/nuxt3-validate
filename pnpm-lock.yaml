@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@vee-validate/zod':
+    specifier: ^4.14.7
+    version: 4.14.7(vue@3.5.13)
   nuxt:
     specifier: ^3.14.1592
     version: 3.14.1592(typescript@5.7.2)(vite@5.4.11)
@@ -1653,6 +1656,16 @@ packages:
       hookable: 5.5.3
       unhead: 1.11.13
       vue: 3.5.13(typescript@5.7.2)
+    dev: false
+
+  /@vee-validate/zod@4.14.7(vue@3.5.13):
+    resolution: {integrity: sha512-UD0Tfyz1cKKd7BinnUztqKL+oeMjg/T4ZEguN/uZV4DsR9z7gdrD0lOuOU7aVl9UpVK6NM7MhDka35Lj7b/DTw==}
+    dependencies:
+      type-fest: 4.29.0
+      vee-validate: 4.14.7(vue@3.5.13)
+      zod: 3.23.8
+    transitivePeerDependencies:
+      - vue
     dev: false
 
   /@vercel/nft@0.27.7(rollup@4.27.4):
