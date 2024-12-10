@@ -1,12 +1,31 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { string as yupString, object as yupObject, bool as yupBool } from 'yup';
+import { useField, useForm } from 'vee-validate';
 
-// フォームデータ
-const formData = ref({
-  textField: '',
-  radioOption: '',
-  dropdown: '',
-  checkbox: false,
+const schemas = {
+  textField: yupString().required('テキスト入力は必須です'),
+  radioOption: yupString().required('ラジオボタンは必須です'),
+  dropdown: yupString().required('ドロップダウンは必須です'),
+  checkbox: yupBool().oneOf([true], 'チェックボックスは必須です'),
+};
+
+// vee-validateでフォーム全体を管理
+const { handleSubmit } = useForm({
+  validationSchema: yupObject(schemas),
+});
+
+// 各フィールドのバリデーション
+// useField の第1引数は、Yupスキーマのキーと一致させる必要がある
+const { value: formText, errorMessage: formTextError } = useField<string>('textField', schemas.textField);
+const { value: radioOption, errorMessage: radioOptionError } = useField<string>('radioOption', schemas.radioOption);
+const { value: dropdown, errorMessage: dropdownError } = useField<string>('dropdown', schemas.dropdown);
+const { value: checkbox, errorMessage: checkboxError } = useField<boolean>('checkbox', schemas.checkbox, { initialValue: false });
+
+// 送信ボタンがクリックされたときにフォームを送信する
+const saveAction = handleSubmit((values) => {
+  alert('フォームが送信されました!');
+  console.log(values);
 });
 
 // ラジオボタンのオプションデータ
@@ -25,14 +44,23 @@ const selectOptions = ref([
 <template>
   <h1>一般的なフォーム</h1>
 
+  <!-- エラーメッセージ表示 -->
+  <div v-if="formTextError || radioOptionError || dropdownError || checkboxError">
+    <ul>
+      <li v-if="formTextError">{{ formTextError }}</li>
+      <li v-if="radioOptionError">{{ radioOptionError }}</li>
+      <li v-if="dropdownError">{{ dropdownError }}</li>
+      <li v-if="checkboxError">{{ checkboxError }}</li>
+    </ul>
+  </div>
+
   <!-- テキスト入力 -->
-  <!-- 文字数カウントする -->
   <div>
     <label for="textField">テキスト入力:</label>
     <input 
       type="text" 
       id="textField" 
-      v-model="formData.textField" 
+      v-model="formText" 
     />
   </div>
   <br>
@@ -41,17 +69,17 @@ const selectOptions = ref([
   <div>
     <p>ラジオボタン:</p>
     <label
-      v-for="radioOption in radioOptions"
-      :key="radioOption.value"
-      :for="radioOption.label"
-      >
+      v-for="radio in radioOptions"
+      :key="radio.value"
+      :for="radio.label"
+    >
       <input
-        :id="radioOption.label" 
-        type="radio" 
-        :value="radioOption.value" 
-        v-model="formData.radioOption"
+        :id="radio.label"
+        type="radio"
+        :value="radio.value"
+        v-model="radioOption"
       />
-      {{ radioOption.label }}
+      {{ radio.label }}
     </label>
   </div>
   <br>
@@ -61,7 +89,7 @@ const selectOptions = ref([
     <label for="dropdown">ドロップダウン:</label>
     <select 
       id="dropdown" 
-      v-model="formData.dropdown"
+      v-model="dropdown"
     >
       <option disabled value="">選択してください</option>
       <option 
@@ -80,7 +108,7 @@ const selectOptions = ref([
     <label>
       <input 
         type="checkbox" 
-        v-model="formData.checkbox" 
+        v-model="checkbox"
       />
       チェックを入れてください
     </label>
@@ -88,5 +116,5 @@ const selectOptions = ref([
   <br>
 
   <!-- 送信ボタン -->
-  <button type="submit">送信</button>
+  <button type="button" @click="saveAction">送信</button>
 </template>
